@@ -1,63 +1,86 @@
 <template>
-  <div class="mainFig">
-    <div class="slider-container">
-      <div class="slider-track">
-        <div class="slider-image" v-for="(image, index) in images" :key="index">
-          <img :src="image" :alt="`Slide ${index + 1}`" />
-        </div>
-      </div>
+  <figure class="imageSlider">
+    <div
+      class="slider-track"
+      :style="{
+        transform: `translateX(-${currentIndex * 100}%)`,
+        transition: isTransitioning ? 'transform 0.5s ease-in-out' : 'none',
+      }"
+      @transitionend="handleTransitionEnd"
+    >
+      <!-- Afbeeldingen + duplicaat -->
+      <img
+        v-for="(image, key) in loopedImages"
+        :key="key"
+        class="slider-image"
+        :src="image"
+        alt="background img"
+      />
     </div>
-  </div>
+  </figure>
 </template>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 
-// Importeer je afbeeldingen
-import image1 from '@/assets/images/Placeholder-_-Glossary.svg'
-import image2 from '@/assets/images/pexels-photo-2581922.jpeg'
-import image3 from '@/assets/images/Placeholder-_-Glossary.svg'
+const props = defineProps<{
+  images: string[]
+}>()
 
-// Zet de afbeeldingen in een array
-const images = ref([image1, image2, image3])
-</script>
+// Maak een array met een duplicaat van de eerste afbeelding
+const loopedImages = computed(() => [...props.images, props.images[0]])
 
-<style scoped>
-.mainFig {
-  width: 100%;
-  height: 90vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
+// Huidige index voor de slider
+const currentIndex = ref(0)
+const isTransitioning = ref(true)
+
+// Interval voor het wisselen van afbeeldingen
+let intervalId: number | null = null
+
+onMounted(() => {
+  intervalId = setInterval(() => {
+    currentIndex.value++
+  }, 15000) // Wissel elke 3 seconden
+})
+
+onUnmounted(() => {
+  if (intervalId) clearInterval(intervalId)
+})
+
+// Handler wanneer de overgang eindigt
+function handleTransitionEnd() {
+  if (currentIndex.value >= 3) {
+    // Als we bij de duplicaat zijn, spring onzichtbaar terug naar de eerste afbeelding
+    isTransitioning.value = false
+    currentIndex.value = 0
+
+    // Na het instellen van de nieuwe positie, herstel de overgang
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        isTransitioning.value = true
+      })
+    })
+  }
 }
-
-.slider-container {
+</script>
+<style scoped>
+.imageSlider {
   width: 100%;
-  height: 25%;
-  margin-bottom: 4rem;
+  height: 80vh;
   overflow: hidden;
-  overflow-x: auto;
+  position: relative;
 }
 
 .slider-track {
   display: flex;
-  gap: 4rem;
-  flex-shrink: 0;
-  padding: 1rem;
+  width: 100%;
   height: 100%;
-  width: max-content;
-}
-.slider-track::-webkit-scrollbar {
-  display: none;
+  transition: transform 0.5s ease-in-out;
 }
 
 .slider-image {
-  display: inline-block;
-  height: 100%;
-}
-
-.slider-image img {
+  width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 0.5rem;
+  flex-shrink: 0;
 }
 </style>

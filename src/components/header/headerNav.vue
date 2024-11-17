@@ -1,14 +1,28 @@
 <template>
   <nav class="nav" v-if="isMenuOpen">
     <ul class="navList">
-      <li><RouterLink to="/about">Over ons</RouterLink></li>
-      <li><RouterLink to="/images">Foto's</RouterLink></li>
-      <li><RouterLink to="/contact">Contact</RouterLink></li>
+      <li :class="{ active: isActiveRoute('/about') }">
+        <RouterLink to="/about">Over ons</RouterLink>
+      </li>
+      <li :class="{ active: isActiveRoute('/images') }">
+        <RouterLink to="/images">Foto's</RouterLink>
+      </li>
+      <li :class="{ active: isActiveRoute('/contact') }">
+        <RouterLink to="/contact">Contact</RouterLink>
+      </li>
     </ul>
   </nav>
 </template>
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// Controleert of de huidige route overeenkomt met een bepaalde path
+function isActiveRoute(path: string): boolean {
+  return route.path === path
+}
+
 defineProps({
   isMenuOpen: Boolean,
 })
@@ -16,8 +30,8 @@ defineProps({
 <style scoped>
 .nav {
   position: absolute;
-  background-color: rgba(98, 130, 93, 1);
-  color: white;
+  background-color: white;
+  color: black;
   width: 100%;
   padding: 1rem;
 }

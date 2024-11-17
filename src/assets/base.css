@@ -27,3 +27,29 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+.active a {
+  color: #840f1b; /* Pas de kleur aan naar wens */
+}
+
+.linkHover {
+  position: relative;
+}
+
+.linkHover::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: #840f1b;
+  bottom: -1px;
+  left: 0;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform 0.3s ease-in-out;
+}
+
+.linkHover:hover::before {
+  transform-origin: left;
+  transform: scaleX(1);
+}

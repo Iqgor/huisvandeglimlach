@@ -9,8 +9,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineEmits } from 'vue'
-
 // Defineer een event die uitgestuurd wordt bij een klik
 const emit = defineEmits(['menuClick'])
 
@@ -23,6 +21,12 @@ const handleClick = () => {
 .nav-container {
   display: block;
   position: relative;
+}
+
+@media screen and (min-width: 768px) {
+  .nav-container {
+    display: none;
+  }
 }
 
 .nav-container .checkbox {
@@ -51,7 +55,7 @@ const handleClick = () => {
   height: 4px;
   width: 100%;
   border-radius: 10px;
-  background: white;
+  background: black;
 }
 
 .nav-container .hamburger-lines .line1 {
