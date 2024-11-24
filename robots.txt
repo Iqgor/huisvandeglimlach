@@ -1,0 +1,24 @@
+# Sta alle zoekmachines toe om de site te crawlen
+User-agent: *
+
+# Blokkeer gevoelige bestanden of directories die niet geïndexeerd hoeven te worden
+Disallow: /node_modules/
+Disallow: /dist/
+Disallow: /.git/
+Disallow: /src/
+Disallow: /tests/
+Disallow: /private/
+Disallow: /config/
+
+# Blokkeer toegang tot serviceworker-bestanden of Vue build-manifesten
+Disallow: /service-worker.js
+Disallow: /manifest.json
+
+# Blokkeer toegang tot dynamisch gegenereerde API-routes als die niet nodig zijn in zoekresultaten
+Disallow: /api/
+
+# Geef expliciet toegang tot de hoofdmap (root) en publieke assets
+Allow: /
+
+# Specificeer de locatie van de sitemap (indien van toepassing)
+Sitemap: https://huisvandeglimlach.nl/sitemap.xml

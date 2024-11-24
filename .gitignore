@@ -15,6 +15,7 @@ coverage
 *.local
 
 /cypress/videos/
+*.webp
 /cypress/screenshots/
 
 # Editor directories and files

@@ -1,16 +1,23 @@
 <template>
   <div class="headerTopper" :style="{ opacity: headerOpacity }">
     <header class="header">
-      <h1 :class="{ active: isActiveRoute('/') }" class="headerTitle">
-        <RouterLink to="/">Casa del sorriso</RouterLink>
+      <h1 @click="showMenu(true)" :class="{ active: isActiveRoute('/') }" class="headerTitle">
+        <RouterLink to="/">{{ t('title') }}</RouterLink>
+        <div class="language-switcher">
+          <span @click="changeLanguage('en')"><span class="fi fi-gb"></span></span>
+          <span @click="changeLanguage('nl')"><span class="fi fi-nl"></span></span>
+          <span @click="changeLanguage('du')"><span class="fi fi-de"></span></span>
+        </div>
       </h1>
+
       <headerNav1 />
-      <headerMenu @menuClick="showMenu" />
+      <headerMenu @menuClick="showMenu" :isMenuOpen="isMenuOpen" />
     </header>
     <transition name="slide">
-      <headerNav :isMenuOpen="isMenuOpen" />
+      <headerNav @menuClick="showMenu" :isMenuOpen="isMenuOpen" />
     </transition>
   </div>
+  <div class="headerFiller"></div>
 </template>
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router'
@@ -18,6 +25,9 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import headerMenu from './header/headerMenu.vue'
 import headerNav from './header/headerNav.vue'
 import headerNav1 from './header/headerNav1.vue'
+
+import { useI18n } from 'vue-i18n'
+const { t, locale } = useI18n()
 
 const isMenuOpen = ref(false)
 const headerOpacity = ref('1') // Start met volledige zichtbaarheid
@@ -30,8 +40,16 @@ function isActiveRoute(path: string): boolean {
   return route.path === path
 }
 
-const showMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
+const showMenu = (header: boolean) => {
+  if (header === true) {
+    isMenuOpen.value = false
+  } else {
+    isMenuOpen.value = !isMenuOpen.value
+  }
+}
+
+const changeLanguage = (lang: string) => {
+  locale.value = lang
 }
 
 // Scroll functie om richting en opacity aan te passen
@@ -75,10 +93,20 @@ header {
 .headerTitle {
   font-size: 175%;
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .headerTitle a {
   color: #840f1b !important;
+}
+
+.language-switcher {
+  display: flex;
+  gap: 10px;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
 .headerTopper {
@@ -89,6 +117,11 @@ header {
 }
 .headerTopper:hover {
   opacity: 100% !important ;
+}
+
+.headerFiller {
+  height: 7rem;
+  width: 100%;
 }
 
 .slide-enter-active,

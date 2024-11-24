@@ -15,15 +15,18 @@
         class="slider-image"
         :src="image"
         alt="background img"
+        v-lazy="image"
       />
     </div>
   </figure>
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 
 const props = defineProps<{
   images: string[]
+  time?: number
 }>()
 
 // Maak een array met een duplicaat van de eerste afbeelding
@@ -37,9 +40,12 @@ const isTransitioning = ref(true)
 let intervalId: number | null = null
 
 onMounted(() => {
-  intervalId = setInterval(() => {
-    currentIndex.value++
-  }, 15000) // Wissel elke 3 seconden
+  intervalId = setInterval(
+    () => {
+      currentIndex.value++
+    },
+    props.time ? props.time : 15000,
+  ) // Wissel elke 3 seconden
 })
 
 onUnmounted(() => {
@@ -48,7 +54,7 @@ onUnmounted(() => {
 
 // Handler wanneer de overgang eindigt
 function handleTransitionEnd() {
-  if (currentIndex.value >= 3) {
+  if (currentIndex.value >= props.images.length) {
     // Als we bij de duplicaat zijn, spring onzichtbaar terug naar de eerste afbeelding
     isTransitioning.value = false
     currentIndex.value = 0
@@ -65,9 +71,15 @@ function handleTransitionEnd() {
 <style scoped>
 .imageSlider {
   width: 100%;
-  height: 80vh;
+  height: 50vh;
   overflow: hidden;
   position: relative;
+}
+
+@media screen and (min-width: 768px) {
+  .imageSlider {
+    height: 80vh;
+  }
 }
 
 .slider-track {

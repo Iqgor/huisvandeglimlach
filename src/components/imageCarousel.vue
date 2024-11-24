@@ -1,18 +1,65 @@
 <template>
   <div class="carousel">
-    <button @click="prevSlide">‹</button>
+    <button @click="prevSlide" aria-label="Previous slide">
+      <svg
+        fill="white"
+        width="5rem"
+        height="5rem"
+        class="modal-button"
+        viewBox="-128 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+          <path
+            d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
+          ></path>
+        </g>
+      </svg>
+    </button>
     <div class="carousel-track-container">
       <ul class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-        <li class="carousel-slide" v-for="(image, index) in images" :key="index">
-          <img :src="image" alt="Image" />
+        <li
+          @click="openImage(index)"
+          class="carousel-slide"
+          v-for="(image, index) in images"
+          :key="index"
+        >
+          <img :src="image" alt="Image" v-lazy="image" />
         </li>
       </ul>
     </div>
-    <button @click="nextSlide">›</button>
+    <button @click="nextSlide" aria-label="Next slide">
+      <svg
+        fill="white"
+        width="5rem"
+        height="5rem"
+        class="modal-button"
+        viewBox="-128 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+        <g id="SVGRepo_iconCarrier">
+          <path
+            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+          ></path>
+        </g>
+      </svg>
+    </button>
+    <imageModal
+      :currentIndex="currentIndex"
+      :images="images"
+      v-if="showModal"
+      @close="showModal = false"
+    />
   </div>
 </template>
 
 <script lang="ts">
+import imageModal from '@/components/imageModal.vue'
+
 import image1 from '@/assets/images/carousel/image1.webp'
 import image2 from '@/assets/images/carousel/image2.webp'
 import image3 from '@/assets/images/carousel/image3.webp'
@@ -27,28 +74,32 @@ export default {
     return {
       images: [image1, image2, image3, image4, image5, image6, image7, image8, image9],
       currentSlide: 0,
-      slideInterval: null as number | null,
+      showModal: false,
+      currentIndex: 0,
     }
   },
-  mounted() {
-    this.startSlideShow()
+  components: {
+    imageModal,
   },
-  beforeUnmount() {
-    if (this.slideInterval !== null) {
-      clearInterval(this.slideInterval)
-    }
-  },
+
   methods: {
-    startSlideShow() {
-      this.slideInterval = setInterval(this.nextSlide, 20000)
+    openImage(index: number) {
+      this.showModal = true
+      this.currentIndex = index
     },
     nextSlide() {
-      this.currentSlide = (this.currentSlide + 1) % Math.ceil(this.images.length / 3)
+      if (window.innerWidth > 768) {
+        // Alleen op grotere schermen
+        this.currentSlide = (this.currentSlide + 1) % Math.ceil(this.images.length / 3)
+      }
     },
     prevSlide() {
-      this.currentSlide =
-        (this.currentSlide - 1 + Math.ceil(this.images.length / 3)) %
-        Math.ceil(this.images.length / 3)
+      if (window.innerWidth > 768) {
+        // Alleen op grotere schermen
+        this.currentSlide =
+          (this.currentSlide - 1 + Math.ceil(this.images.length / 3)) %
+          Math.ceil(this.images.length / 3)
+      }
     },
   },
 }
@@ -64,23 +115,18 @@ export default {
   overflow: hidden;
 }
 
-.carousel-track-container {
-  overflow: hidden;
-  width: 100%;
-  height: 30vh;
-}
-
 .carousel-track {
   display: flex;
-  transition: transform 0.75s ease-in-out;
+  transition: 0.5s all;
   list-style: none;
   height: 100%;
   gap: 1rem;
 }
 
 .carousel-slide {
-  min-width: 33.33%;
+  min-width: 33.3%;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .carousel-slide img {
@@ -102,10 +148,11 @@ button {
   z-index: 1;
   color: white;
   transition: 0.25s color;
+  display: none;
 }
 
-button:hover {
-  color: #840f1b;
+.carousel-track-container {
+  padding: 0 1rem; /* Pas de hoogte aan indien nodig */
 }
 
 button:nth-of-type(1) {
@@ -114,5 +161,35 @@ button:nth-of-type(1) {
 
 button:nth-of-type(2) {
   right: 10px;
+}
+
+@media screen and (max-width: 768px) {
+  .carousel-track-container {
+    height: 30vh; /* Pas de hoogte aan indien nodig */
+  }
+
+  .carousel-track {
+    gap: 0.5rem; /* Maak de gap kleiner voor mobiel */
+    overflow: auto;
+  }
+
+  .carousel-slide {
+    min-width: 80%; /* Laat één slide duidelijk in beeld zien */
+  }
+}
+
+@media screen and (min-width: 768px) {
+  button {
+    display: block;
+  }
+  button:hover svg {
+    fill: #840f1b;
+  }
+  button svg {
+    transition: 0.25s all;
+  }
+  .carousel-track-container {
+    height: 30vh;
+  }
 }
 </style>

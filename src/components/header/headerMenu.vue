@@ -1,17 +1,23 @@
 <template>
   <div class="nav-container">
-    <input class="checkbox" type="checkbox" @click="handleClick" />
-    <div class="hamburger-lines">
+    <input
+      id="hamburger"
+      class="checkbox"
+      type="checkbox"
+      :checked="props.isMenuOpen"
+      @click="handleClick"
+    />
+    <label for="hamburger" class="hamburger-lines">
       <span class="line line1"></span>
       <span class="line line2"></span>
       <span class="line line3"></span>
-    </div>
+    </label>
   </div>
 </template>
 <script setup lang="ts">
 // Defineer een event die uitgestuurd wordt bij een klik
 const emit = defineEmits(['menuClick'])
-
+const props = defineProps<{ isMenuOpen: boolean }>()
 // Methode om het klik event af te handelen en door te sturen
 const handleClick = () => {
   emit('menuClick')
