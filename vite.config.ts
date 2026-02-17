@@ -9,6 +9,7 @@ import { imagetools } from 'vite-imagetools'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), vueJsx(), vueDevTools(), imagetools()],
+  base: '/huisvandeglimlach/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
