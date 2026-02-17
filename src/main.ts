@@ -1,13 +1,14 @@
 import './assets/main.css'
 import VueLazyload from 'vue-lazyload'
 import { createI18n } from 'vue-i18n'
-import { createApp } from 'vue'
+import { createApp, watch } from 'vue'
 import App from './App.vue'
 import router from './router'
 
 import en from './locales/en.json'
 import nl from './locales/nl.json'
 import du from './locales/du.json'
+import it from './locales/it.json'
 
 // Configuratie van Vue I18n
 const i18n = createI18n({
@@ -17,9 +18,24 @@ const i18n = createI18n({
     en,
     nl,
     du,
+    it,
   },
 })
+// Dynamically change the document title based on the current language
+const defaultTitle = 'Huis van de Glimlach'
+const titles: { [key: string]: string } = {
+  en: 'House of the Smile',
+  nl: 'Huis van de Glimlach',
+  du: 'Haus des Lächelns',
+  it: 'Casa del Sorriso',
+}
 
+watch(
+  () => i18n.global.locale,
+  (newLocale: keyof typeof titles) => {
+    document.title = titles[newLocale] || defaultTitle
+  },
+)
 const app = createApp(App)
 
 app.use(router)

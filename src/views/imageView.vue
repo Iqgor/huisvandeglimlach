@@ -1,7 +1,7 @@
 <template>
   <div class="images" style="height: 100%; width: 100%">
     <div>
-      <RouterLink to="/">{{ t('back') }}</RouterLink>
+      <RouterLink class="linkHover" to="/">{{ t('back') }}</RouterLink>
       <h1>{{ t('photos') }}</h1>
     </div>
     <div class="imageWrapper">
@@ -93,6 +93,7 @@ export default {
   flex-direction: column;
   gap: 2rem;
 }
+
 .imageWrapper {
   display: grid;
   grid-template-columns: 1fr;

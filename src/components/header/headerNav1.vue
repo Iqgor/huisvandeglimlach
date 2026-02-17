@@ -40,6 +40,10 @@ function isActiveRoute(path: string): boolean {
   display: flex;
   gap: 2rem;
   width: 100%;
-  font-size: 125%;
+  font-size: 175%;
+}
+.navHeaderList a {
+  font-weight: bold;
+  text-transform: uppercase;
 }
 </style>

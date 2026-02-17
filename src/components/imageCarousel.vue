@@ -21,9 +21,9 @@
     <div class="carousel-track-container">
       <ul class="carousel-track" :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
         <li
-          @click="openImage(index)"
+          @click="openImage()"
           class="carousel-slide"
-          v-for="(image, index) in images"
+          v-for="(image, index) in imagePaths"
           :key="index"
         >
           <img :src="image" alt="Image" v-lazy="image" />
@@ -48,57 +48,58 @@
         </g>
       </svg>
     </button>
-    <imageModal
-      :currentIndex="currentIndex"
-      :images="images"
-      v-if="showModal"
-      @close="showModal = false"
-    />
   </div>
 </template>
 
 <script lang="ts">
-import imageModal from '@/components/imageModal.vue'
-
-import image1 from '@/assets/images/carousel/image1.webp'
-import image2 from '@/assets/images/carousel/image2.webp'
-import image3 from '@/assets/images/carousel/image3.webp'
-import image4 from '@/assets/images/carousel/image4.webp'
-import image5 from '@/assets/images/carousel/image5.webp'
-import image6 from '@/assets/images/carousel/image6.webp'
-import image7 from '@/assets/images/carousel/image7.webp'
-import image8 from '@/assets/images/carousel/image8.webp'
-import image9 from '@/assets/images/carousel/image9.webp'
 export default {
   data() {
     return {
-      images: [image1, image2, image3, image4, image5, image6, image7, image8, image9],
+      imagePaths: [] as string[],
       currentSlide: 0,
       showModal: false,
       currentIndex: 0,
     }
   },
-  components: {
-    imageModal,
+
+  async created() {
+    const images = import.meta.glob('../assets/images/carousel/*.{png,jpg,jpeg,webp}', {
+      eager: true,
+      query: { w: 1920 },
+    }) // Update pad naar je map
+
+    const loadedImages = Object.keys(images).map((key) => {
+      const module = images[key]
+      return { path: (module as { default: string }).default, name: key.split('/').pop() }
+    })
+
+    // Sort images by name
+    loadedImages.sort((a, b) => {
+      const nameA = a.name ? a.name.replace(/\D/g, '') : ''
+      const nameB = b.name ? b.name.replace(/\D/g, '') : ''
+      return parseInt(nameA) - parseInt(nameB)
+    })
+
+    this.imagePaths = loadedImages.map((image) => image.path) // Opslaan in de state
   },
 
   methods: {
-    openImage(index: number) {
-      this.showModal = true
-      this.currentIndex = index
+    openImage() {
+      this.$router.push({ path: '/images' })
+      window.scrollTo(0, 0)
     },
     nextSlide() {
       if (window.innerWidth > 768) {
         // Alleen op grotere schermen
-        this.currentSlide = (this.currentSlide + 1) % Math.ceil(this.images.length / 3)
+        this.currentSlide = (this.currentSlide + 1) % Math.ceil(this.imagePaths.length / 3)
       }
     },
     prevSlide() {
       if (window.innerWidth > 768) {
         // Alleen op grotere schermen
         this.currentSlide =
-          (this.currentSlide - 1 + Math.ceil(this.images.length / 3)) %
-          Math.ceil(this.images.length / 3)
+          (this.currentSlide - 1 + Math.ceil(this.imagePaths.length / 3)) %
+          Math.ceil(this.imagePaths.length / 3)
       }
     },
   },

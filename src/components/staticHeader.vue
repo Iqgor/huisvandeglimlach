@@ -7,9 +7,9 @@
           <span @click="changeLanguage('en')"><span class="fi fi-gb"></span></span>
           <span @click="changeLanguage('nl')"><span class="fi fi-nl"></span></span>
           <span @click="changeLanguage('du')"><span class="fi fi-de"></span></span>
+          <span @click="changeLanguage('it')"><span class="fi fi-it"></span></span>
         </div>
       </h1>
-
       <headerNav1 />
       <headerMenu @menuClick="showMenu" :isMenuOpen="isMenuOpen" />
     </header>
@@ -95,7 +95,7 @@ header {
   text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .headerTitle a {
@@ -103,10 +103,24 @@ header {
 }
 
 .language-switcher {
-  display: flex;
-  gap: 10px;
+  display: none;
+  gap: 1rem;
   font-size: 1.5rem;
+}
+
+.language-switcher .fi {
+  transition: 0.25s all;
   cursor: pointer;
+}
+
+.language-switcher .fi:hover {
+  scale: 1.2;
+}
+
+@media screen and (min-width: 768px) {
+  .language-switcher {
+    display: flex;
+  }
 }
 
 .headerTopper {
